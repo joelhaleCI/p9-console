@@ -14,6 +14,7 @@ $global:P9ConnectRunning = $null
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
+
 ###########ENDVARIABLES#############
 
 ########LOGGING########
@@ -49,7 +50,7 @@ LogIt -note "Note sent to user: $note "
 function GetToken(){
 
     if(Test-Path -Path "$P9Consoledir\Token.txt" -PathType leaf){
-        write-host "Stored token found, loading..."Get
+        write-host "Stored token found, loading..."
         Start-Sleep 1
         $global:ident = Get-Content "$P9Consoledir\Token.txt"}
         else {
@@ -89,6 +90,7 @@ function GetToken(){
 
 function BuildSet ($check){
     Clear-Variable -Name allcomputers -scope Global
+    $progressPreference = 'silentlyContinue'
             
             if((Test-Path -Path "C:\P9\P9Console\AllComputers.csv" -PathType leaf) -And $check -eq $null){
                 write-host "Local Cached copy of 'AllComputers' file found, loading..."
@@ -106,7 +108,7 @@ function BuildSet ($check){
                     for ($i =1; $moredata -eq "True"; $i++){
 
                         #Add computers to collection
-                        $global:allcomputers = $global:allcomputers + (Invoke-RestMethod -Uri "https://dashboard.panorama9.com/api/devices/computers?per_page=200&page=$i" -Method GET -Headers $headers)
+                        $global:allcomputers = $global:allcomputers + (Invoke-RestMethod -Uri "https://dashboard.panorama9.com/api/devices/computers?per_page=100&page=$i" -Method GET -Headers $headers)
     
                         #check if data is done
                         $moredata = Invoke-WebRequest -Uri "https://dashboard.panorama9.com/api/devices/computers?per_page=200&page=$i" -Method GET -Headers $headers
@@ -315,7 +317,7 @@ function search-general([string]$type, $target){
     }
 
     ##This block allows us to correct for no entry or single entry and allows user to return to menu i result was no good.
-    switch ($i){
+    :search switch ($i){
         '0' {write-host "No results found, consider loosening search term"
             pause
             break}
@@ -331,7 +333,7 @@ function search-general([string]$type, $target){
         do{
             $userchoice = Read-host -prompt "Select an object to act on`nEnter 'M' to return to main menu"
             if ($userchoice -eq "M"){
-                break}
+                break search}
             elseif ($userchoice -eq ""){
                 Write-host "Please enter valid entry"}
             }while ($userchoice -eq "")
