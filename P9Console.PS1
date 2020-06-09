@@ -413,6 +413,7 @@ function Menu
      Write-Host " 2: Search by SerialNumber"
      Write-Host " 3: Search by User"
      Write-Host " 4: Search by Alias (WIP)"
+     Write-Host " D: Search by Device ID"
      Write-Host "`n" -nonewline
      Write-Host " A: Manually add device"
      Write-Host "`n"-nonewline
@@ -492,6 +493,8 @@ function ComputerMenu
 
         Write-Host " S: Search software"
         Write-Host "`n" -NoNewline
+        Write-Host " R: Refresh view"
+        Write-Host "`n" -NoNewline
 
         #P9 Connect Logic
         if($P9ConnectRunning -eq $true){
@@ -530,6 +533,8 @@ function ComputerMenu
                 pause}
             'S' {cls
                 SoftwareSearch}
+            'R' {cls
+                subsearch $targetMachine.device_id}
             'C' {cls
                 if ($P9ConnectRunning -eq $true){GetP9ConnectClient; Start-Process -FilePath "C:\P9\P9 Connect.exe" -Wait}
                 else {StartP9Connect}
